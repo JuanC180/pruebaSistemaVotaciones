@@ -1,0 +1,84 @@
+/// modificar el controlador poner los try catche 
+
+
+// swagger
+http://localhost:3000/api-docs/#/Votes/get_votes_statistics
+
+
+
+import Voters from "../models/votersModels.js";
+
+// Controlador
+const votersGet = async (req, res) => {
+  try {
+    const votos = await Voters.findAll();
+    res.json(votos);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener los votantes" });
+  }
+};
+
+const votersPost = async (req, res) => {
+  const { nombre, edad } = req.body;
+  try {
+    const votante = await Voters.create({ nombre, edad });
+    res.status(201).json(votante);
+  } catch (error) {
+    res.status(500).json({ error: "Error al crear el votante" });
+  }
+};
+
+const votersGetById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const votante = await Voters.findOne({ where: { id } });
+    if (votante) {
+      res.json(votante);
+    } else {
+      res.status(404).json({ error: "Votante no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener el votante" });
+  }
+};
+
+const votersPut = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, edad } = req.body;
+  try {
+    const votante = await Voters.findByPk(id);
+    if (votante) {
+      await votante.update({ nombre, edad });
+      res.json(votante);
+    } else {
+      res.status(404).json({ error: "Votante no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error al actualizar el votante" });
+  }
+};
+
+const votersDelete = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const votante = await Voters.findByPk(id);
+    if (votante) {
+      await votante.destroy();
+      res.json({ message: "Votante eliminado" });
+    } else {
+      res.status(404).json({ error: "Votante no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error al eliminar el votante" });
+  }
+};
+
+export {
+  votersGet,
+  votersPost,
+  votersGetById,
+  votersPut,
+  votersDelete
+};
+
+
